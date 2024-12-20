@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Connect4Board extends JPanel {
     public static final int ROWS = 6;
@@ -19,6 +21,7 @@ public class Connect4Board extends JPanel {
     private int player1Score = 0;
     private int player2Score = 0;
     private int previewCol = -1; // Column index for preview, -1 means no preview
+    private List<Point> winningCells = new ArrayList<>(); // To store winning cell positions
 
     public Connect4Board() {
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
@@ -83,6 +86,7 @@ public class Connect4Board extends JPanel {
         }
         currentPlayer = Seed.CROSS; // Reset to starting player
         currentState = State.PLAYING; // Reset game state
+        winningCells.clear(); // Clear winning cells
         repaint(); // Refresh the board
     }
 
@@ -97,13 +101,18 @@ public class Connect4Board extends JPanel {
                 player2Score++;
             }
 
+            // Store winning cells
+            winningCells = getWinningCells(player, row, col);
+
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "Congratulations! " + winner + " is the Winner!!");
+                resetGame();
             });
         } else if (isDraw()) {
             currentState = State.DRAW;
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "It's a Draw!");
+                resetGame();
             });
         }
     }
@@ -130,6 +139,36 @@ public class Connect4Board extends JPanel {
         return false;
     }
 
+    private List<Point> getWinningCells(Seed player, int row, int col) {
+        List<Point> cells = new ArrayList<>();
+        // Check all directions and add winning cells
+        checkDirectionForWinningCells(player, row, col, 1, 0, cells); // Horizontal
+        checkDirectionForWinningCells(player, row, col, 0, 1, cells); // Vertical
+        checkDirectionForWinningCells(player, row, col, 1, 1, cells); // Diagonal /
+        checkDirectionForWinningCells(player, row, col, 1, -1, cells); // Diagonal \
+        return cells;
+    }
+
+    private void checkDirectionForWinningCells(Seed player, int row, int col, int deltaRow, int deltaCol, List<Point> cells) {
+        int count = 0;
+        List<Point> tempCells = new ArrayList<>();
+        for (int i = -3; i <= 3; i++) {
+            int r = row + i * deltaRow;
+            int c = col + i * deltaCol;
+            if (r >= 0 && r < ROWS && c >= 0 && c < COLS && this.cells[r][c].content == player) {
+                tempCells.add(new Point(r, c));
+                count++;
+                if (count == 4) {
+                    cells.addAll(tempCells);
+                    return;
+                }
+            } else {
+                count = 0;
+                tempCells.clear();
+            }
+        }
+    }
+
     public boolean isDraw() {
         for (int col = 0; col < COLS; ++col) {
             if (cells[0][col].content == Seed.NO_SEED) {
@@ -151,11 +190,20 @@ public class Connect4Board extends JPanel {
             }
         }
 
+        // Highlight winning cells
+        for (Point p : winningCells) {
+            if (cells[p.x][p.y].content == Seed.CROSS) {
+                g.setColor(new Color(0, 255, 0, 50)); // Green for player X
+            } else if (cells[p.x][p.y].content == Seed.NOUGHT) {
+                g.setColor(new Color(255, 105, 180, 50)); // Pink for player O
+            }
+            g.fillRect(p.y * CELL_SIZE, p.x * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        }
+
         // Draw the preview square
         if (previewCol != -1 && currentState == State.PLAYING) {
             for (int row = ROWS - 1; row >= 0; row--) {
                 if (cells[row][previewCol].content == Seed.NO_SEED) {
-                    // Set color based on the current player
                     if (currentPlayer == Seed.CROSS) {
                         g.setColor(new Color(0, 255, 0, 50)); // Semi-transparent green for player X
                     } else if (currentPlayer == Seed.NOUGHT) {
