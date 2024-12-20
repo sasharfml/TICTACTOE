@@ -208,6 +208,7 @@ public class Board extends JPanel {
             }
         }
 
+
         g.setColor(Color.BLACK);
         String turnText = (currentPlayer == Seed.CROSS) ? "Elphaba's Turn" : "Glinda's Turn";
         g.drawString(turnText, 125, CANVAS_HEIGHT + 165);
