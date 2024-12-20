@@ -24,6 +24,8 @@ public enum SoundEffect {
     }
 
 
+
+
     public static Volume volume = Volume.LOW;
 
     private Clip clip;

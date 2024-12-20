@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+
 public class Board extends JPanel {
     public static final int ROWS = 3;
     public static final int COLS = 3;
@@ -201,6 +202,7 @@ public class Board extends JPanel {
         g.fillRect(xOffset, yOffset, GRID_WIDTH, CANVAS_HEIGHT);
         g.fillRect(xOffset + CANVAS_WIDTH - GRID_WIDTH, yOffset, GRID_WIDTH, CANVAS_HEIGHT);
         g.fillRect(xOffset, yOffset + CANVAS_HEIGHT - GRID_WIDTH, CANVAS_WIDTH, GRID_WIDTH);
+
 
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
