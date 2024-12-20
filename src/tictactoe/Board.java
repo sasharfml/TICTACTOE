@@ -1,49 +1,128 @@
 package tictactoe;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 public class Board extends JPanel {
     public static final int ROWS = 3;
     public static final int COLS = 3;
-    public static final int CELL_SIZE = 120; // Size of each cell
+    public static final int CELL_SIZE = 120;
     public static final int CANVAS_WIDTH = CELL_SIZE * COLS;
     public static final int CANVAS_HEIGHT = CELL_SIZE * ROWS;
     public static final int GRID_WIDTH = 8;
     public static final int GRID_WIDTH_HALF = GRID_WIDTH / 2;
-    public static final Color COLOR_GRID = Color.LIGHT_GRAY; // Color for grid and border
+    public static final Color COLOR_GRID = Color.LIGHT_GRAY;
 
     private Cell[][] cells;
     private Seed currentPlayer;
     private State currentState;
+    private Image backgroundImage;
+    private JButton changeImageButton;
+    private JButton changeImageButtonDua;
+    private JButton changeImageButtonSatu;
+    private JButton toggleSoundButton;
+    private boolean isSoundPlaying = true;
 
     public Board() {
         initGame();
-        setPreferredSize(new java.awt.Dimension(CANVAS_WIDTH, CANVAS_HEIGHT + 30)); // Extra space for text
+        setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT + 150));
+
+        ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/interface.png"));
+        backgroundImage = backgroundIcon.getImage();
+
+        changeImageButton = new JButton();
+        changeImageButton.setBounds(500, 300, 80, 70);
+        changeImageButton.setContentAreaFilled(false);
+        changeImageButton.setBorderPainted(false);
+        changeImageButton.setOpaque(false);
+        changeImageButton.setFocusPainted(false);
+        changeImageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Seed.CROSS.toggleImage();
+                Seed.NOUGHT.toggleImage();
+                repaint();
+            }
+        });
+        setLayout(null);
+        add(changeImageButton);
+
+        changeImageButtonDua = new JButton();
+        changeImageButtonDua.setBounds(500, 405, 80, 100);
+        changeImageButtonDua.setContentAreaFilled(false);
+        changeImageButtonDua.setBorderPainted(false);
+        changeImageButtonDua.setOpaque(false);
+        changeImageButtonDua.setFocusPainted(false);
+        changeImageButtonDua.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Seed.CROSS.toggleImageDua();
+                Seed.NOUGHT.toggleImageDua();
+                repaint();
+            }
+        });
+        add(changeImageButtonDua);
+
+        changeImageButtonSatu = new JButton();
+        changeImageButtonSatu.setBounds(500, 150, 80, 120);
+        changeImageButtonSatu.setContentAreaFilled(false);
+        changeImageButtonSatu.setBorderPainted(false);
+        changeImageButtonSatu.setOpaque(false);
+        changeImageButtonSatu.setFocusPainted(false);
+        changeImageButtonSatu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Seed.CROSS.toggleImageSatu();
+                Seed.NOUGHT.toggleImageSatu();
+                repaint();
+            }
+        });
+        add(changeImageButtonSatu);
+
+        // Toggle sound button
+        toggleSoundButton = new JButton(" ");
+        toggleSoundButton.setBounds(25, 533, 60, 50);
+        toggleSoundButton.setContentAreaFilled(false);
+        toggleSoundButton.setBorderPainted(false);
+        toggleSoundButton.setFocusPainted(false);
+        toggleSoundButton.setOpaque(false);
+        toggleSoundButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isSoundPlaying) {
+                    SoundEffect.KAROKE.stop();
+                } else {
+                    SoundEffect.KAROKE.play();
+                }
+                isSoundPlaying = !isSoundPlaying; // Toggle the sound state
+            }
+        });
+        add(toggleSoundButton);
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int mouseX = e.getX();
                 int mouseY = e.getY();
-                int rowSelected = mouseY / CELL_SIZE;
-                int colSelected = mouseX / CELL_SIZE;
+                int rowSelected = (mouseY - getVerticalOffset()) / CELL_SIZE;
+                int colSelected = (mouseX - getHorizontalOffset()) / CELL_SIZE;
 
                 if (currentState == State.PLAYING) {
-                    if (cells[rowSelected][colSelected].content == Seed.NO_SEED) {
-                        cells[rowSelected][colSelected].content = currentPlayer;
-                        updateGame(currentPlayer, rowSelected, colSelected);
-                        if (currentPlayer == Seed.CROSS) {
-                            SoundEffect.ALPHABA.play(); // Play sound when player X makes a move
-                        } else if (currentPlayer == Seed.NOUGHT) {
-                            SoundEffect.GLINDA.play(); // Play sound when player O makes a move
+                    if (rowSelected >= 0 && rowSelected < ROWS && colSelected >= 0 && colSelected < COLS) {
+                        if (cells[rowSelected][colSelected].content == Seed.NO_SEED) {
+                            cells[rowSelected][colSelected].content = currentPlayer;
+                            updateGame(currentPlayer, rowSelected, colSelected);
+                            if (currentPlayer == Seed.CROSS) {
+                                SoundEffect.ALPHABA.play();
+                            } else if (currentPlayer == Seed.NOUGHT) {
+                                SoundEffect.GLINDA.play();
+                            }
+                            currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
                         }
-                        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
                     }
                 }
                 repaint();
@@ -65,9 +144,9 @@ public class Board extends JPanel {
     public void updateGame(Seed player, int row, int col) {
         if (hasWon(player, row, col)) {
             currentState = (player == Seed.CROSS) ? State.CROSS_WON : State.NOUGHT_WON;
-            String winner = (player == Seed.CROSS) ? "X" : "O";
+            String winner = (player == Seed.CROSS) ? "Elphaba" : "Glinda";
             SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(this, "Congratulations! Player " + winner + " is the Winner!!");
+                JOptionPane.showMessageDialog(this, "Congratulations! " + winner + " is the Winner!!");
             });
         } else if (isDraw()) {
             currentState = State.DRAW;
@@ -98,33 +177,47 @@ public class Board extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+
+        int xOffset = getHorizontalOffset();
+        int yOffset = getVerticalOffset();
+
         g.setColor(COLOR_GRID);
         for (int row = 1; row < ROWS; ++row) {
-            g.fillRoundRect(0, CELL_SIZE * row - GRID_WIDTH_HALF,
+            g.fillRoundRect(xOffset, yOffset + CELL_SIZE * row - GRID_WIDTH_HALF,
                     CANVAS_WIDTH - 1, GRID_WIDTH,
                     GRID_WIDTH, GRID_WIDTH);
         }
         for (int col = 1; col < COLS; ++col) {
-            g.fillRoundRect(CELL_SIZE * col - GRID_WIDTH_HALF, 0,
+            g.fillRoundRect(xOffset + CELL_SIZE * col - GRID_WIDTH_HALF, yOffset,
                     GRID_WIDTH, CANVAS_HEIGHT - 1,
                     GRID_WIDTH, GRID_WIDTH);
         }
 
-        // Draw the border around the grid with the same thickness and color as the grid lines
-        g.fillRect(0, 0, CANVAS_WIDTH, GRID_WIDTH); // Top border
-        g.fillRect(0, 0, GRID_WIDTH, CANVAS_HEIGHT); // Left border
-        g.fillRect(CANVAS_WIDTH - GRID_WIDTH, 0, GRID_WIDTH, CANVAS_HEIGHT); // Right border
-        g.fillRect(0, CANVAS_HEIGHT - GRID_WIDTH, CANVAS_WIDTH, GRID_WIDTH); // Bottom border
+        g.fillRect(xOffset, yOffset, CANVAS_WIDTH, GRID_WIDTH);
+        g.fillRect(xOffset, yOffset, GRID_WIDTH, CANVAS_HEIGHT);
+        g.fillRect(xOffset + CANVAS_WIDTH - GRID_WIDTH, yOffset, GRID_WIDTH, CANVAS_HEIGHT);
+        g.fillRect(xOffset, yOffset + CANVAS_HEIGHT - GRID_WIDTH, CANVAS_WIDTH, GRID_WIDTH);
 
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {
-                cells[row][col].paint(g);
+                cells[row][col].paint(g, xOffset, yOffset);
             }
         }
 
-        // Draw the current player's turn below the board
         g.setColor(Color.BLACK);
-        String turnText = (currentPlayer == Seed.CROSS) ? "X's Turn" : "O's Turn";
-        g.drawString(turnText, 10, CANVAS_HEIGHT + 20);
+        String turnText = (currentPlayer == Seed.CROSS) ? "Elphaba's Turn" : "Glinda's Turn";
+        g.drawString(turnText, 125, CANVAS_HEIGHT + 165);
+    }
+
+    private int getHorizontalOffset() {
+        return (getWidth() - CANVAS_WIDTH) / 2;
+    }
+
+    private int getVerticalOffset() {
+        return (getHeight() - CANVAS_HEIGHT) / 2 + 28;
     }
 }
