@@ -93,7 +93,7 @@ public class Connect4Board extends JPanel {
     public void updateGame(Seed player, int row, int col) {
         if (hasWon(player, row, col)) {
             currentState = (player == Seed.CROSS) ? State.CROSS_WON : State.NOUGHT_WON;
-            String winner = (player == Seed.CROSS) ? "Player X" : "Player O";
+            String winner = (player == Seed.CROSS) ? "Elphaba" : "Glinda";
 
             if (player == Seed.CROSS) {
                 player1Score++;

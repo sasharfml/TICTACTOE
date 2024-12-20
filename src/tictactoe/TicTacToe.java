@@ -15,7 +15,7 @@ public class TicTacToe extends JPanel {
     public static final Font FONT_STATUS = new Font("OCR A Extended", Font.PLAIN, 14);
 
     private boolean isGameStarted = false;
-    private JPanel ticTacToePanel; // Declare ticTacToePanel
+    private JPanel ticTacToePanel;
 
     public TicTacToe() {
         setLayout(null);
@@ -91,8 +91,8 @@ public class TicTacToe extends JPanel {
         backButton.setContentAreaFilled(false);
         backButton.setBorderPainted(false);
         backButton.setFocusPainted(false);
-        backButton.setForeground(Color.BLACK); // Set text color to black for visibility
-        backButton.setBounds(10, 10, 50, 20); // Position in the top-left corner
+        backButton.setForeground(Color.BLACK);
+        backButton.setBounds(10, 10, 50, 20);
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -158,7 +158,6 @@ public class TicTacToe extends JPanel {
         board.setBounds(0, 0, 600, 600);
         ticTacToePanel.add(board);
 
-        // Tambahkan tombol "Back" dan "Reset" dengan action listener
         board.addControlButtons(
                 new ActionListener() {
                     @Override
@@ -179,7 +178,7 @@ public class TicTacToe extends JPanel {
         );
 
         add(ticTacToePanel);
-        ticTacToePanel.setVisible(true); // Ensure the panel is visible
+        ticTacToePanel.setVisible(true);
         revalidate();
         repaint();
     }
@@ -191,27 +190,21 @@ public class TicTacToe extends JPanel {
                 super.paintComponent(g);
                 ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/interface.png"));
                 Image backgroundImage = backgroundIcon.getImage();
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw image to fill the panel
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             }
         };
         newGamePanel.setLayout(null);
         newGamePanel.setBounds(0, 0, 600, 600);
 
-        // Add a new Tic Tac Toe board to the new game panel
         NewGameBoard newBoard = new NewGameBoard();
-        int xOffset = (newGamePanel.getWidth() - Connect4Board.CANVAS_WIDTH) / 2;
-        int yOffset = (newGamePanel.getHeight() - Connect4Board.CANVAS_HEIGHT) / 2 + 20;
-        newBoard.setBounds(xOffset, yOffset, Connect4Board.CANVAS_WIDTH, Connect4Board.CANVAS_HEIGHT);
-
-        newBoard.setBounds(0, 0, 600, 600); // Adjust height to leave space for the button
+        newBoard.setBounds(0, 0, 600, 600);
         newGamePanel.add(newBoard);
 
-        // Back button to return to the game panel
         newBoard.addControlButtons(
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        remove(ticTacToePanel);
+                        remove(newGamePanel);
                         addGameComponents();
                         revalidate();
                         repaint();
@@ -226,12 +219,10 @@ public class TicTacToe extends JPanel {
                 }
         );
 
-
         add(newGamePanel);
         revalidate();
         repaint();
     }
-
 
     private void addWelcomePanel() {
         JPanel welcomePanel = new JPanel() {
@@ -294,7 +285,7 @@ public class TicTacToe extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/connectfourr.png"));
+                ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/connectfourrrr.png"));
                 Image backgroundImage = backgroundIcon.getImage();
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             }
@@ -308,6 +299,29 @@ public class TicTacToe extends JPanel {
         connect4Board.setBounds(xOffset, yOffset, Connect4Board.CANVAS_WIDTH, Connect4Board.CANVAS_HEIGHT);
         connect4Panel.add(connect4Board);
 
+        JLabel timerLabel = new JLabel("20s");
+        timerLabel.setFont(new Font("Poppins", Font.BOLD, 20));
+        timerLabel.setForeground(new Color(149, 83, 107));
+        timerLabel.setBounds(490, 548, 100, 30);
+        connect4Panel.add(timerLabel);
+
+        Timer timer = new Timer(1000, new ActionListener() {
+            private int timeRemaining = 20;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (timeRemaining > 0) {
+                    timeRemaining--;
+                } else {
+                    // Time is up, switch player
+                    // Reset the timer for the next player
+                    timeRemaining = 20;
+                }
+                timerLabel.setText(timeRemaining + "s");
+            }
+        });
+        timer.start();
+
         JButton backButton = new JButton("Back");
         backButton.setFont(new Font("Poppins", Font.PLAIN, 14));
         backButton.setContentAreaFilled(false);
@@ -318,6 +332,7 @@ public class TicTacToe extends JPanel {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                timer.stop(); // Stop the timer when going back
                 remove(connect4Panel);
                 addWelcomePanel();
                 revalidate();
@@ -343,6 +358,7 @@ public class TicTacToe extends JPanel {
 
         add(connect4Panel);
     }
+
 
     public static void main(String[] args) {
         JFrame frame = new JFrame(TITLE);
