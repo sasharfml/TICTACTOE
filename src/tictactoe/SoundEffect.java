@@ -23,6 +23,7 @@ public enum SoundEffect {
         MUTE, LOW, MEDIUM, HIGH
     }
 
+
     public static Volume volume = Volume.LOW;
 
     private Clip clip;
