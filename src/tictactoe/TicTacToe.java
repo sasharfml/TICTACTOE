@@ -24,7 +24,7 @@ public class TicTacToe extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/welcomettt.png"));
+                ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/gef.gif"));
                 Image backgroundImage = backgroundIcon.getImage();
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             }
@@ -78,7 +78,7 @@ public class TicTacToe extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/multiplayer.png"));
+                ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/guf.gif"));
                 Image backgroundImage = backgroundIcon.getImage();
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             }
