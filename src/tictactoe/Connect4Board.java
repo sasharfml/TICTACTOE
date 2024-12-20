@@ -1,7 +1,5 @@
 package tictactoe;
 
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -18,6 +16,8 @@ public class Connect4Board extends JPanel {
     private Connect4Cell[][] cells;
     private Seed currentPlayer;
     private State currentState;
+    private int player1Score = 0;
+    private int player2Score = 0;
 
     public void resetGame() {
         for (int row = 0; row < ROWS; ++row) {
@@ -74,6 +74,13 @@ public class Connect4Board extends JPanel {
         if (hasWon(player, row, col)) {
             currentState = (player == Seed.CROSS) ? State.CROSS_WON : State.NOUGHT_WON;
             String winner = (player == Seed.CROSS) ? "Player X" : "Player O";
+
+            if (player == Seed.CROSS) {
+                player1Score++;
+            } else {
+                player2Score++;
+            }
+
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "Congratulations! " + winner + " is the Winner!!");
             });
@@ -127,5 +134,15 @@ public class Connect4Board extends JPanel {
                 cells[row][col].paint(g, 0, 0);
             }
         }
+
+        // Draw Scores
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        String scoreText = "Player 1: " + player1Score ;
+        String scoreToxt = "Player 2: " + player2Score ;
+        int textWidth = g.getFontMetrics().stringWidth(scoreText);
+        int textWodth = g.getFontMetrics().stringWidth(scoreToxt);
+        g.drawString(scoreText, CANVAS_WIDTH - textWidth - 150, CANVAS_HEIGHT - 1);
+        g.drawString(scoreToxt, CANVAS_WIDTH - textWodth - 10, CANVAS_HEIGHT - 10);
     }
 }

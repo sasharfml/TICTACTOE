@@ -2,6 +2,8 @@ package tictactoe;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -19,12 +21,64 @@ public class NewGameBoard extends JPanel {
     private Seed currentPlayer;
     private State currentState;
     private Image backgroundImage;
+    private JButton changeImageButton;
+    private JButton changeImageButtonDua;
+    private JButton changeImageButtonSatu;
+    private JButton toggleSoundButton;
     private AIPlayer aiPlayer;
 
     public NewGameBoard() {
         initGame();
         aiPlayer = new AIPlayer(Seed.NOUGHT); // Assuming AI plays as NOUGHT
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT + 150));
+        changeImageButton = new JButton();
+        changeImageButton.setBounds(500, 300, 80, 70);
+        changeImageButton.setContentAreaFilled(false);
+        changeImageButton.setBorderPainted(false);
+        changeImageButton.setOpaque(false);
+        changeImageButton.setFocusPainted(false);
+        changeImageButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Seed.CROSS.toggleImage();
+                Seed.NOUGHT.toggleImage();
+                repaint();
+            }
+        });
+        setLayout(null);
+        add(changeImageButton);
+
+        changeImageButtonDua = new JButton();
+        changeImageButtonDua.setBounds(500, 405, 80, 100);
+        changeImageButtonDua.setContentAreaFilled(false);
+        changeImageButtonDua.setBorderPainted(false);
+        changeImageButtonDua.setOpaque(false);
+        changeImageButtonDua.setFocusPainted(false);
+        changeImageButtonDua.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Seed.CROSS.toggleImageDua();
+                Seed.NOUGHT.toggleImageDua();
+                repaint();
+            }
+        });
+        add(changeImageButtonDua);
+
+        changeImageButtonSatu = new JButton();
+        changeImageButtonSatu.setBounds(500, 150, 80, 120);
+        changeImageButtonSatu.setContentAreaFilled(false);
+        changeImageButtonSatu.setBorderPainted(false);
+        changeImageButtonSatu.setOpaque(false);
+        changeImageButtonSatu.setFocusPainted(false);
+        changeImageButtonSatu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Seed.CROSS.toggleImageSatu();
+                Seed.NOUGHT.toggleImageSatu();
+                repaint();
+            }
+        });
+        add(changeImageButtonSatu);
 
         ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/interface.png"));
         backgroundImage = backgroundIcon.getImage();
@@ -85,11 +139,13 @@ public class NewGameBoard extends JPanel {
             String winner = (player == Seed.CROSS) ? "Player X" : "Player O";
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "Congratulations! " + winner + " is the Winner!!");
+                resetGame();
             });
         } else if (isDraw()) {
             currentState = State.DRAW;
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "It's a Draw!");
+                resetGame();
             });
         }
     }
@@ -163,5 +219,27 @@ public class NewGameBoard extends JPanel {
         currentPlayer = Seed.CROSS;
         currentState = State.PLAYING;
         repaint();
+    }
+
+
+    public void addControlButtons(ActionListener backAction, ActionListener resetAction) {
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("Poppins", Font.PLAIN, 16));
+        backButton.setBounds(92, 545, 100, 30);
+        backButton.setContentAreaFilled(false);; // Semi-transparent white
+        backButton.setForeground(Color.WHITE);
+        backButton.setBorderPainted(false);
+        backButton.addActionListener(backAction);
+        add(backButton);
+
+        JButton resetButton = new JButton("Reset");
+        resetButton.setFont(new Font("Poppins", Font.PLAIN, 16));
+        resetButton.setBounds(205, 543, 100, 30);
+        resetButton.setContentAreaFilled(false);
+        resetButton.setForeground(Color.WHITE);
+        resetButton.setBorderPainted(false);
+        resetButton.setFocusPainted(false);
+        resetButton.addActionListener(resetAction);
+        add(resetButton);
     }
 }

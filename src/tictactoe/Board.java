@@ -31,15 +31,6 @@ public class Board extends JPanel {
         initGame();
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT + 150));
 
-
-
-        JButton quitButton = new JButton("Quit");
-        quitButton.setFont(new Font("Poppins", Font.PLAIN, 14));
-        quitButton.setForeground(Color.WHITE);
-        quitButton.setBackground(Color.WHITE); // Set background color to white
-        quitButton.setOpaque(true); // Make the button opaque
-        quitButton.setBounds(120, 530, 100, 30); // Position next to the reset button
-
         changeImageButton = new JButton();
         changeImageButton.setBounds(500, 300, 80, 70);
         changeImageButton.setContentAreaFilled(false);
@@ -153,11 +144,13 @@ public class Board extends JPanel {
             String winner = (player == Seed.CROSS) ? "Elphaba" : "Glinda";
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "Congratulations! " + winner + " is the Winner!!");
+                resetGame();
             });
         } else if (isDraw()) {
             currentState = State.DRAW;
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "It's a Draw!");
+                resetGame();
             });
         }
     }
@@ -184,7 +177,7 @@ public class Board extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/interface.png"));
-        backgroundImage = backgroundIcon.getImage();
+        Image backgroundImage = backgroundIcon.getImage();
 
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
@@ -227,5 +220,37 @@ public class Board extends JPanel {
 
     private int getVerticalOffset() {
         return (getHeight() - CANVAS_HEIGHT) / 2 + 28;
+    }
+
+    public void resetGame() {
+        for (int row = 0; row < ROWS; ++row) {
+            for (int col = 0; col < COLS; ++col) {
+                cells[row][col].content = Seed.NO_SEED;
+            }
+        }
+        currentPlayer = Seed.CROSS;
+        currentState = State.PLAYING;
+        repaint();
+    }
+
+    public void addControlButtons(ActionListener backAction, ActionListener resetAction) {
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("Poppins", Font.PLAIN, 16));
+        backButton.setBounds(92, 545, 100, 30);
+        backButton.setContentAreaFilled(false);; // Semi-transparent white
+        backButton.setForeground(Color.WHITE);
+        backButton.setBorderPainted(false);
+        backButton.addActionListener(backAction);
+        add(backButton);
+
+        JButton resetButton = new JButton("Reset");
+        resetButton.setFont(new Font("Poppins", Font.PLAIN, 16));
+        resetButton.setBounds(205, 543, 100, 30);
+        resetButton.setContentAreaFilled(false);
+        resetButton.setForeground(Color.WHITE);
+        resetButton.setBorderPainted(false);
+        resetButton.setFocusPainted(false);
+        resetButton.addActionListener(resetAction);
+        add(resetButton);
     }
 }

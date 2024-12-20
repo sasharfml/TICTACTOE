@@ -86,6 +86,24 @@ public class TicTacToe extends JPanel {
         gamePanel.setLayout(null);
         gamePanel.setBounds(0, 0, 600, 600);
 
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("Poppins", Font.PLAIN, 12));
+        backButton.setContentAreaFilled(false);
+        backButton.setBorderPainted(false);
+        backButton.setFocusPainted(false);
+        backButton.setForeground(Color.BLACK); // Set text color to black for visibility
+        backButton.setBounds(10, 10, 50, 20); // Position in the top-left corner
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                remove(gamePanel);
+                addWelcomePanel();
+                revalidate();
+                repaint();
+            }
+        });
+        gamePanel.add(backButton);
+
         JButton pinkButton = new JButton();
         pinkButton.setBounds(300, 50, 250, 250);
         pinkButton.setContentAreaFilled(false);
@@ -113,6 +131,8 @@ public class TicTacToe extends JPanel {
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                SoundEffect.WELCOME.stop();
+                SoundEffect.KAROKE.play();
                 remove(gamePanel);
                 addNewGamePanel();
                 revalidate();
@@ -125,7 +145,12 @@ public class TicTacToe extends JPanel {
     }
 
     private void addTicTacToeGame() {
-        ticTacToePanel = new JPanel(); // Initialize ticTacToePanel
+        ticTacToePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+            }
+        };
         ticTacToePanel.setLayout(null);
         ticTacToePanel.setBounds(0, 0, 600, 600);
 
@@ -133,58 +158,28 @@ public class TicTacToe extends JPanel {
         board.setBounds(0, 0, 600, 600);
         ticTacToePanel.add(board);
 
-        JButton backButton = new JButton("Back");
-        backButton.setFont(new Font("Poppins", Font.PLAIN, 14));
-        backButton.setContentAreaFilled(false);
-        backButton.setBorderPainted(false);
-        backButton.setFocusPainted(false);
-        backButton.setBounds(58, 550, 100, 30);
-        backButton.setForeground(Color.WHITE);
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                remove(ticTacToePanel);
-                addWelcomePanel();
-                revalidate();
-                repaint();
-            }
-        });
-
-        JButton resetButton = new JButton("Reset");
-        resetButton.setFont(new Font("Poppins", Font.PLAIN, 14));
-        resetButton.setForeground(Color.BLACK);
-        resetButton.setBackground(Color.WHITE);
-        resetButton.setOpaque(true);
-        resetButton.setBounds(10, 530, 100, 30);
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                board.initGame();
-                board.repaint();
-            }
-        });
-
-        JButton backButtonT = new JButton("Back");
-        backButtonT.setFont(new Font("Poppins", Font.PLAIN, 14));
-        backButtonT.setContentAreaFilled(false);
-        backButtonT.setBorderPainted(false);
-        backButtonT.setFocusPainted(false);
-        backButtonT.setBounds(58, 550, 100, 30);
-        backButtonT.setForeground(Color.WHITE);
-        backButtonT.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                remove(ticTacToePanel);
-                addWelcomePanel();
-                revalidate();
-                repaint();
-            }
-        });
-
-        ticTacToePanel.add(resetButton);
-        ticTacToePanel.add(backButtonT);
+        // Tambahkan tombol "Back" dan "Reset" dengan action listener
+        board.addControlButtons(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        remove(ticTacToePanel);
+                        addGameComponents();
+                        revalidate();
+                        repaint();
+                    }
+                },
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        board.initGame();
+                        board.repaint();
+                    }
+                }
+        );
 
         add(ticTacToePanel);
+        ticTacToePanel.setVisible(true); // Ensure the panel is visible
         revalidate();
         repaint();
     }
@@ -204,41 +199,33 @@ public class TicTacToe extends JPanel {
 
         // Add a new Tic Tac Toe board to the new game panel
         NewGameBoard newBoard = new NewGameBoard();
+        int xOffset = (newGamePanel.getWidth() - Connect4Board.CANVAS_WIDTH) / 2;
+        int yOffset = (newGamePanel.getHeight() - Connect4Board.CANVAS_HEIGHT) / 2 + 20;
+        newBoard.setBounds(xOffset, yOffset, Connect4Board.CANVAS_WIDTH, Connect4Board.CANVAS_HEIGHT);
+
         newBoard.setBounds(0, 0, 600, 600); // Adjust height to leave space for the button
         newGamePanel.add(newBoard);
 
         // Back button to return to the game panel
-        JButton newGameButton = new JButton(" Back ");
-        newGameButton.setFont(new Font("Poppins", Font.PLAIN, 18));
-        newGameButton.setBounds(50, 300, 250, 250);
-        newGameButton.setContentAreaFilled(false);
-        newGameButton.setBorderPainted(false);
-        newGameButton.setFocusPainted(false);
-        newGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                remove(newGamePanel);
-                addGameComponents();
-                revalidate();
-                repaint();
-            }
-        });
-        newGamePanel.add(newGameButton);
+        newBoard.addControlButtons(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        remove(ticTacToePanel);
+                        addGameComponents();
+                        revalidate();
+                        repaint();
+                    }
+                },
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        newBoard.initGame();
+                        newBoard.repaint();
+                    }
+                }
+        );
 
-        // Reset button to restart the game
-        JButton resetButton = new JButton("Reset");
-        resetButton.setFont(new Font("Poppins", Font.PLAIN, 14));
-        resetButton.setContentAreaFilled(false);
-        resetButton.setBorderPainted(true);
-        resetButton.setFocusPainted(false);
-        resetButton.setBounds(120, 560, 100, 30); // Position next to the back button
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newBoard.resetGame();
-            }
-        });
-        newGamePanel.add(resetButton);
 
         add(newGamePanel);
         revalidate();
@@ -349,7 +336,7 @@ public class TicTacToe extends JPanel {
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                connect4Board.resetGame();
             }
         });
         connect4Panel.add(resetButton);
