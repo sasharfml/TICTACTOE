@@ -1,13 +1,10 @@
 package tictactoe;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import javax.swing.*;
 
-public class Board extends JPanel {
+public class NewGameBoard extends JPanel {
     public static final int ROWS = 3;
     public static final int COLS = 3;
     public static final int CELL_SIZE = 120;
@@ -21,87 +18,15 @@ public class Board extends JPanel {
     private Seed currentPlayer;
     private State currentState;
     private Image backgroundImage;
-    private JButton changeImageButton;
-    private JButton changeImageButtonDua;
-    private JButton changeImageButtonSatu;
-    private JButton toggleSoundButton;
-    private boolean isSoundPlaying = true;
 
-    public Board() {
+    public NewGameBoard() {
         initGame();
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT + 150));
 
         ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/interface.png"));
         backgroundImage = backgroundIcon.getImage();
 
-        changeImageButton = new JButton();
-        changeImageButton.setBounds(500, 300, 80, 70);
-        changeImageButton.setContentAreaFilled(false);
-        changeImageButton.setBorderPainted(false);
-        changeImageButton.setOpaque(false);
-        changeImageButton.setFocusPainted(false);
-        changeImageButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Seed.CROSS.toggleImage();
-                Seed.NOUGHT.toggleImage();
-                repaint();
-            }
-        });
         setLayout(null);
-        add(changeImageButton);
-
-        changeImageButtonDua = new JButton();
-        changeImageButtonDua.setBounds(500, 405, 80, 100);
-        changeImageButtonDua.setContentAreaFilled(false);
-        changeImageButtonDua.setBorderPainted(false);
-        changeImageButtonDua.setOpaque(false);
-        changeImageButtonDua.setFocusPainted(false);
-        changeImageButtonDua.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Seed.CROSS.toggleImageDua();
-                Seed.NOUGHT.toggleImageDua();
-                repaint();
-            }
-        });
-        add(changeImageButtonDua);
-
-        changeImageButtonSatu = new JButton();
-        changeImageButtonSatu.setBounds(500, 150, 80, 120);
-        changeImageButtonSatu.setContentAreaFilled(false);
-        changeImageButtonSatu.setBorderPainted(false);
-        changeImageButtonSatu.setOpaque(false);
-        changeImageButtonSatu.setFocusPainted(false);
-        changeImageButtonSatu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Seed.CROSS.toggleImageSatu();
-                Seed.NOUGHT.toggleImageSatu();
-                repaint();
-            }
-        });
-        add(changeImageButtonSatu);
-
-        // Toggle sound button
-        toggleSoundButton = new JButton(" ");
-        toggleSoundButton.setBounds(25, 533, 60, 50);
-        toggleSoundButton.setContentAreaFilled(false);
-        toggleSoundButton.setBorderPainted(false);
-        toggleSoundButton.setFocusPainted(false);
-        toggleSoundButton.setOpaque(false);
-        toggleSoundButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isSoundPlaying) {
-                    SoundEffect.KAROKE.stop();
-                } else {
-                    SoundEffect.KAROKE.play();
-                }
-                isSoundPlaying = !isSoundPlaying; // Toggle the sound state
-            }
-        });
-        add(toggleSoundButton);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -116,11 +41,6 @@ public class Board extends JPanel {
                         if (cells[rowSelected][colSelected].content == Seed.NO_SEED) {
                             cells[rowSelected][colSelected].content = currentPlayer;
                             updateGame(currentPlayer, rowSelected, colSelected);
-                            if (currentPlayer == Seed.CROSS) {
-                                SoundEffect.ALPHABA.play();
-                            } else if (currentPlayer == Seed.NOUGHT) {
-                                SoundEffect.GLINDA.play();
-                            }
                             currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
                         }
                     }
@@ -144,7 +64,7 @@ public class Board extends JPanel {
     public void updateGame(Seed player, int row, int col) {
         if (hasWon(player, row, col)) {
             currentState = (player == Seed.CROSS) ? State.CROSS_WON : State.NOUGHT_WON;
-            String winner = (player == Seed.CROSS) ? "Elphaba" : "Glinda";
+            String winner = (player == Seed.CROSS) ? "Player X" : "Player O";
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this, "Congratulations! " + winner + " is the Winner!!");
             });
@@ -196,11 +116,6 @@ public class Board extends JPanel {
                     GRID_WIDTH, CANVAS_HEIGHT - 1,
                     GRID_WIDTH, GRID_WIDTH);
         }
-
-        g.fillRect(xOffset, yOffset, CANVAS_WIDTH, GRID_WIDTH);
-        g.fillRect(xOffset, yOffset, GRID_WIDTH, CANVAS_HEIGHT);
-        g.fillRect(xOffset + CANVAS_WIDTH - GRID_WIDTH, yOffset, GRID_WIDTH, CANVAS_HEIGHT);
-        g.fillRect(xOffset, yOffset + CANVAS_HEIGHT - GRID_WIDTH, CANVAS_WIDTH, GRID_WIDTH);
 
         for (int row = 0; row < ROWS; ++row) {
             for (int col = 0; col < COLS; ++col) {

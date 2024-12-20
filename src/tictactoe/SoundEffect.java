@@ -8,8 +8,6 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-
-
 public enum SoundEffect {
     EAT_FOOD("src/tictactoe/goodresult-82807.wav"),
     EXPLODE("src/tictactoe/goodresult-82807.wav"),
@@ -22,9 +20,6 @@ public enum SoundEffect {
     public static enum Volume {
         MUTE, LOW, MEDIUM, HIGH
     }
-
-
-
 
     public static Volume volume = Volume.LOW;
 

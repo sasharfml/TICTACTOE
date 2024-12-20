@@ -25,11 +25,6 @@ public class Cell {
         content = Seed.NO_SEED;
     }
 
-
-
-
-
-
     /** Reset this cell's content to NO_SEED, ready for new game */
     public void newGame() {
         content = Seed.NO_SEED;
