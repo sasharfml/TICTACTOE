@@ -17,7 +17,7 @@ public class Board extends JPanel {
     public static final int GRID_WIDTH_HALF = GRID_WIDTH / 2;
     public static final Color COLOR_GRID = Color.LIGHT_GRAY;
 
-    private Cell[][] cells;
+    Cell[][] cells;
     private Seed currentPlayer;
     private State currentState;
     private Image backgroundImage;
@@ -31,8 +31,14 @@ public class Board extends JPanel {
         initGame();
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT + 150));
 
-        ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/interface.png"));
-        backgroundImage = backgroundIcon.getImage();
+
+
+        JButton quitButton = new JButton("Quit");
+        quitButton.setFont(new Font("Poppins", Font.PLAIN, 14));
+        quitButton.setForeground(Color.WHITE);
+        quitButton.setBackground(Color.WHITE); // Set background color to white
+        quitButton.setOpaque(true); // Make the button opaque
+        quitButton.setBounds(120, 530, 100, 30); // Position next to the reset button
 
         changeImageButton = new JButton();
         changeImageButton.setBounds(500, 300, 80, 70);
@@ -177,6 +183,8 @@ public class Board extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/interface.png"));
+        backgroundImage = backgroundIcon.getImage();
 
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
@@ -209,8 +217,8 @@ public class Board extends JPanel {
         }
 
         g.setColor(Color.BLACK);
-        String turnText = (currentPlayer == Seed.CROSS) ? "X's Turn" : "O's Turn";
-        g.drawString(turnText, 10, CANVAS_HEIGHT + 20);
+        String turnText = (currentPlayer == Seed.CROSS) ? "Elphaba's Turn" : "Glinda's Turn";
+        g.drawString(turnText, 125, CANVAS_HEIGHT + 165);
     }
 
     private int getHorizontalOffset() {

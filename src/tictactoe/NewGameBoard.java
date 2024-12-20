@@ -1,8 +1,9 @@
 package tictactoe;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class NewGameBoard extends JPanel {
     public static final int ROWS = 3;
@@ -18,9 +19,11 @@ public class NewGameBoard extends JPanel {
     private Seed currentPlayer;
     private State currentState;
     private Image backgroundImage;
+    private AIPlayer aiPlayer;
 
     public NewGameBoard() {
         initGame();
+        aiPlayer = new AIPlayer(Seed.NOUGHT); // Assuming AI plays as NOUGHT
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT + 150));
 
         ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/tictactoe/interface.png"));
@@ -42,6 +45,21 @@ public class NewGameBoard extends JPanel {
                             cells[rowSelected][colSelected].content = currentPlayer;
                             updateGame(currentPlayer, rowSelected, colSelected);
                             currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+
+                            // AI makes a move if the game is still playing
+                            if (currentState == State.PLAYING && currentPlayer == aiPlayer.getAiSeed()) {
+                                Timer timer = new Timer(500, event -> {
+                                    int[] aiMove = aiPlayer.makeMove(cells);
+                                    if (aiMove != null) {
+                                        cells[aiMove[0]][aiMove[1]].content = aiPlayer.getAiSeed();
+                                        updateGame(aiPlayer.getAiSeed(), aiMove[0], aiMove[1]);
+                                        currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                                        repaint();
+                                    }
+                                });
+                                timer.setRepeats(false);
+                                timer.start();
+                            }
                         }
                     }
                 }
@@ -134,5 +152,16 @@ public class NewGameBoard extends JPanel {
 
     private int getVerticalOffset() {
         return (getHeight() - CANVAS_HEIGHT) / 2 + 28;
+    }
+
+    public void resetGame() {
+        for (int row = 0; row < ROWS; ++row) {
+            for (int col = 0; col < COLS; ++col) {
+                cells[row][col].content = Seed.NO_SEED;
+            }
+        }
+        currentPlayer = Seed.CROSS;
+        currentState = State.PLAYING;
+        repaint();
     }
 }
