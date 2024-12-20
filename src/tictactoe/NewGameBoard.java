@@ -197,9 +197,9 @@ public class NewGameBoard extends JPanel {
             }
         }
 
-        g.setColor(Color.BLACK);
-        String turnText = (currentPlayer == Seed.CROSS) ? "X's Turn" : "O's Turn";
-        g.drawString(turnText, 10, CANVAS_HEIGHT + 20);
+        g.setColor(Color.GRAY);
+        String turnText = (currentPlayer == Seed.CROSS) ? "Elphaba's Turn " : "Glinda's Turn";
+        g.drawString(turnText, 125, CANVAS_HEIGHT + 165);
     }
 
     private int getHorizontalOffset() {
