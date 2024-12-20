@@ -18,17 +18,7 @@ public class Connect4Board extends JPanel {
     private State currentState;
     private int player1Score = 0;
     private int player2Score = 0;
-
-    public void resetGame() {
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
-                cells[row][col].content = Seed.NO_SEED; // Reset each cell
-            }
-        }
-        currentPlayer = Seed.CROSS; // Reset to starting player
-        currentState = State.PLAYING; // Reset game state
-        repaint(); // Refresh the board
-    }
+    private int previewCol = -1; // Column index for preview, -1 means no preview
 
     public Connect4Board() {
         setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
@@ -57,6 +47,21 @@ public class Connect4Board extends JPanel {
                 }
             }
         });
+
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int mouseX = e.getX();
+                int colSelected = mouseX / CELL_SIZE;
+
+                if (colSelected >= 0 && colSelected < COLS) {
+                    previewCol = colSelected;
+                } else {
+                    previewCol = -1;
+                }
+                repaint();
+            }
+        });
     }
 
     private void initGame() {
@@ -68,6 +73,17 @@ public class Connect4Board extends JPanel {
         }
         currentPlayer = Seed.CROSS;
         currentState = State.PLAYING;
+    }
+
+    public void resetGame() {
+        for (int row = 0; row < ROWS; ++row) {
+            for (int col = 0; col < COLS; ++col) {
+                cells[row][col].content = Seed.NO_SEED; // Reset each cell
+            }
+        }
+        currentPlayer = Seed.CROSS; // Reset to starting player
+        currentState = State.PLAYING; // Reset game state
+        repaint(); // Refresh the board
     }
 
     public void updateGame(Seed player, int row, int col) {
@@ -135,14 +151,20 @@ public class Connect4Board extends JPanel {
             }
         }
 
-        // Draw Scores
-        g.setColor(Color.BLACK);
-        g.setFont(new Font("SansSerif", Font.BOLD, 16));
-        String scoreText = "Player 1: " + player1Score ;
-        String scoreToxt = "Player 2: " + player2Score ;
-        int textWidth = g.getFontMetrics().stringWidth(scoreText);
-        int textWodth = g.getFontMetrics().stringWidth(scoreToxt);
-        g.drawString(scoreText, CANVAS_WIDTH - textWidth - 150, CANVAS_HEIGHT - 1);
-        g.drawString(scoreToxt, CANVAS_WIDTH - textWodth - 10, CANVAS_HEIGHT - 10);
+        // Draw the preview square
+        if (previewCol != -1 && currentState == State.PLAYING) {
+            for (int row = ROWS - 1; row >= 0; row--) {
+                if (cells[row][previewCol].content == Seed.NO_SEED) {
+                    // Set color based on the current player
+                    if (currentPlayer == Seed.CROSS) {
+                        g.setColor(new Color(0, 255, 0, 50)); // Semi-transparent green for player X
+                    } else if (currentPlayer == Seed.NOUGHT) {
+                        g.setColor(new Color(255, 105, 180, 50)); // Brighter pink for player O
+                    }
+                    g.fillRect(previewCol * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    break;
+                }
+            }
+        }
     }
 }
